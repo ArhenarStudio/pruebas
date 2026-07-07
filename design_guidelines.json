@@ -1,0 +1,87 @@
+{
+  "project_type": "hybrid_fullstack",
+  "theme": "light",
+  "archetype": "Archetype 4: Swiss & High-Contrast",
+  "tone": "Authority, Clarity, Truth, Precise",
+  "colors": {
+    "background": "#FFFFFF",
+    "surface": "#F7F7F7",
+    "surface_hover": "#EFEFEF",
+    "border": "#E5E5E5",
+    "text_primary": "#0A0A0A",
+    "text_secondary": "#525252",
+    "accent": "#002FA7",
+    "accent_hover": "#00247D",
+    "accent_text": "#FFFFFF",
+    "error": "#FF3B30",
+    "success": "#34C759"
+  },
+  "typography": {
+    "font_heading": "Outfit",
+    "font_body": "Inter",
+    "hierarchy": {
+      "h1": "text-4xl tracking-tighter font-medium text-[#0A0A0A]",
+      "h2": "text-2xl tracking-tight font-medium text-[#0A0A0A]",
+      "h3": "text-xl tracking-tight font-medium text-[#0A0A0A]",
+      "body": "text-sm leading-relaxed text-[#525252]",
+      "label": "text-xs tracking-[0.05em] uppercase font-semibold text-[#525252]"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Tailwind standard with generous padding (p-6, p-8) for panels",
+    "cms_layout": "Flexbox/Grid layout. Left sidebar (320px fixed) for settings with crisp 1px right border. Main area for live canvas (bg-[#F7F7F7] with a centered white preview window scaling down to fit).",
+    "corners": "rounded-none or minimal rounded-md (4px) for interactive elements (strict Swiss feel)",
+    "shadows": "Minimal. Use 1px borders instead of shadows to define containers. For popovers: shadow-[0_4px_24px_rgba(0,0,0,0.08)] with 1px border."
+  },
+  "components": {
+    "sidebar": "Flat white background, 1px right border, dense Shadcn UI inputs for controls.",
+    "inputs": "Shadcn UI Input, Select, Switch, Slider. High contrast borders focus:ring-1 focus:ring-black rounded-none or small radius.",
+    "buttons": "Flat colors. Primary: bg-[#002FA7] text-white hover:bg-[#00247D]. Secondary: bg-white border border-[#E5E5E5] text-[#0A0A0A] hover:bg-[#F7F7F7].",
+    "storefront_preview": {
+      "announcement_bar": "Full width, configurable background/text color, dismissible 'X'.",
+      "header": "Sticky or static, includes minimal logo, centered links, right-aligned cart button.",
+      "sticky_header_pill": "Floating pill nav on scroll down (backdrop-blur-xl bg-white/70 border border-[#E5E5E5]).",
+      "cart_drawer": "Shadcn Sheet component, 1px left border, minimal list of items.",
+      "footer": "Large padding (py-24), grid columns for links, large typography for brand name."
+    }
+  },
+  "motion_and_interaction": {
+    "hover": "Subtle background color shifts on buttons/links. Never rely only on color; add an underline or 1px border change.",
+    "transitions": "transition-all duration-200 ease-in-out",
+    "canvas_update": "Smooth transition on live preview when settings change."
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.pexels.com/photos/28504904/pexels-photo-28504904.jpeg",
+        "category": "logo",
+        "description": "Minimal black and white logo for the storefront header"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1648994517760-19afc8c7ba00",
+        "category": "product",
+        "description": "Modern wooden chair for storefront product display / cart items"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1707722197576-c1a03c5e8dde",
+        "category": "product",
+        "description": "Modern white chair for storefront product display"
+      }
+    ],
+    "icons": "lucide-react for all CMS dashboard icons and storefront UI icons (cart, menu, close)."
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure all text meets 4.5:1 ratio. Button texts must have high contrast against background.",
+    "testing_attributes": "All interactive elements MUST include data-testid attributes (e.g., data-testid='cms-sidebar', data-testid='header-logo-input', data-testid='cart-toggle')."
+  },
+  "instructions_to_main_agent": [
+    "Use standard `.js` and `.jsx` files (NO `.tsx`).",
+    "Build the CMS with a dual-pane layout: a left sidebar for controls and a right main area for the live storefront preview.",
+    "Use Shadcn UI for the sidebar controls (Accordions, Inputs, Switches, Color Pickers if possible).",
+    "The storefront preview should immediately reflect state changes from the sidebar.",
+    "Ensure the storefront implements an Announcement Bar, Header, Sticky Header Pill (appears on scroll), Footer, and a Cart Drawer (using Shadcn Sheet).",
+    "Maintain the strict, high-contrast 'Swiss' aesthetic: rely on 1px borders (#E5E5E5), pure black/white, and flat surfaces over heavy shadows or gradients.",
+    "DO NOT use generic fonts for headings (use Outfit imported via Google Fonts).",
+    "Use the provided image URLs for logos and mock product data in the live preview."
+  ]
+}
