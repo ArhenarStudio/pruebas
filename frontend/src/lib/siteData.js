@@ -1,0 +1,93 @@
+export const defaultConfig = {
+  announcementBar: {
+    enabled: true,
+    text: "Free worldwide shipping on orders over $150 — Ends Sunday.",
+    bgColor: "#0A0A0A",
+    textColor: "#FFFFFF",
+    linkLabel: "Shop the sale",
+    link: "#",
+    dismissible: true,
+  },
+  header: {
+    logoText: "MERIDIAN",
+    logoImage: "",
+    navLinks: [
+      { label: "New In", href: "#" },
+      { label: "Furniture", href: "#" },
+      { label: "Lighting", href: "#" },
+      { label: "Journal", href: "#" },
+    ],
+    layout: "logo-left",
+    bgColor: "#FFFFFF",
+    textColor: "#0A0A0A",
+    showSearch: true,
+    showCart: true,
+    ctaLabel: "",
+  },
+  stickyHeader: {
+    enabled: true,
+    style: "pill",
+    showAfter: 240,
+    bgColor: "#FFFFFF",
+    textColor: "#0A0A0A",
+    blur: true,
+    pillLabel: "MERIDIAN",
+    pillCtaLabel: "Cart",
+  },
+  footer: {
+    brandName: "MERIDIAN",
+    tagline: "Considered objects for the modern interior.",
+    bgColor: "#0A0A0A",
+    textColor: "#FFFFFF",
+    columns: [
+      { title: "Shop", links: [{ label: "New Arrivals", href: "#" }, { label: "Best Sellers", href: "#" }, { label: "Sale", href: "#" }] },
+      { title: "Company", links: [{ label: "About", href: "#" }, { label: "Careers", href: "#" }, { label: "Stores", href: "#" }] },
+      { title: "Support", links: [{ label: "Contact", href: "#" }, { label: "Shipping", href: "#" }, { label: "Returns", href: "#" }] },
+    ],
+    socials: [
+      { platform: "instagram", href: "#" },
+      { platform: "twitter", href: "#" },
+      { platform: "facebook", href: "#" },
+    ],
+    copyright: "© 2026 Meridian Studio. All rights reserved.",
+  },
+  cart: {
+    title: "Your Cart",
+    emptyText: "Your cart is currently empty.",
+    checkoutLabel: "Proceed to Checkout",
+    accentColor: "#002FA7",
+    showImages: true,
+    freeShippingThreshold: 150,
+  },
+};
+
+export const mockProducts = [
+  {
+    id: "p1",
+    name: "Larsen Lounge Chair",
+    price: 420,
+    image: "https://images.unsplash.com/photo-1648994517760-19afc8c7ba00",
+    category: "Furniture",
+  },
+  {
+    id: "p2",
+    name: "Palette Accent Chair",
+    price: 380,
+    image: "https://images.unsplash.com/photo-1707722197576-c1a03c5e8dde",
+    category: "Furniture",
+  },
+  {
+    id: "p3",
+    name: "Larsen Lounge — Walnut",
+    price: 465,
+    image: "https://images.unsplash.com/photo-1648994517760-19afc8c7ba00",
+    category: "Furniture",
+  },
+  {
+    id: "p4",
+    name: "Palette Chair — Ivory",
+    price: 340,
+    image: "https://images.unsplash.com/photo-1707722197576-c1a03c5e8dde",
+    category: "Furniture",
+  },
+];

@@ -5,68 +5,128 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
-import uuid
+from pydantic import BaseModel, Field
+from typing import Any, Dict
 from datetime import datetime, timezone
 
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+SITE_ID = "site"
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+DEFAULT_CONFIG: Dict[str, Any] = {
+    "announcementBar": {
+        "enabled": True,
+        "text": "Free worldwide shipping on orders over $150 — Ends Sunday.",
+        "bgColor": "#0A0A0A",
+        "textColor": "#FFFFFF",
+        "linkLabel": "Shop the sale",
+        "link": "#",
+        "dismissible": True,
+    },
+    "header": {
+        "logoText": "MERIDIAN",
+        "logoImage": "",
+        "navLinks": [
+            {"label": "New In", "href": "#"},
+            {"label": "Furniture", "href": "#"},
+            {"label": "Lighting", "href": "#"},
+            {"label": "Journal", "href": "#"},
+        ],
+        "layout": "logo-left",
+        "bgColor": "#FFFFFF",
+        "textColor": "#0A0A0A",
+        "showSearch": True,
+        "showCart": True,
+        "ctaLabel": "",
+    },
+    "stickyHeader": {
+        "enabled": True,
+        "style": "pill",
+        "showAfter": 240,
+        "bgColor": "#FFFFFF",
+        "textColor": "#0A0A0A",
+        "blur": True,
+        "pillLabel": "MERIDIAN",
+        "pillCtaLabel": "Cart",
+    },
+    "footer": {
+        "brandName": "MERIDIAN",
+        "tagline": "Considered objects for the modern interior.",
+        "bgColor": "#0A0A0A",
+        "textColor": "#FFFFFF",
+        "columns": [
+            {"title": "Shop", "links": [{"label": "New Arrivals", "href": "#"}, {"label": "Best Sellers", "href": "#"}, {"label": "Sale", "href": "#"}]},
+            {"title": "Company", "links": [{"label": "About", "href": "#"}, {"label": "Careers", "href": "#"}, {"label": "Stores", "href": "#"}]},
+            {"title": "Support", "links": [{"label": "Contact", "href": "#"}, {"label": "Shipping", "href": "#"}, {"label": "Returns", "href": "#"}]},
+        ],
+        "socials": [
+            {"platform": "instagram", "href": "#"},
+            {"platform": "twitter", "href": "#"},
+            {"platform": "facebook", "href": "#"},
+        ],
+        "copyright": "© 2026 Meridian Studio. All rights reserved.",
+    },
+    "cart": {
+        "title": "Your Cart",
+        "emptyText": "Your cart is currently empty.",
+        "checkoutLabel": "Proceed to Checkout",
+        "accentColor": "#002FA7",
+        "showImages": True,
+        "freeShippingThreshold": 150,
+    },
+}
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
 
-# Add your routes to the router instead of directly to app
+class ConfigUpdate(BaseModel):
+    config: Dict[str, Any] = Field(default_factory=dict)
+
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "CMS Site Builder API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.get("/config")
+async def get_config():
+    doc = await db.site_config.find_one({"_id": SITE_ID})
+    if not doc:
+        now = datetime.now(timezone.utc).isoformat()
+        doc = {"_id": SITE_ID, "config": DEFAULT_CONFIG, "updatedAt": now}
+        await db.site_config.insert_one(doc)
+    return {"config": doc["config"], "updatedAt": doc.get("updatedAt")}
 
-# Include the router in the main app
+
+@api_router.put("/config")
+async def update_config(payload: ConfigUpdate):
+    now = datetime.now(timezone.utc).isoformat()
+    await db.site_config.update_one(
+        {"_id": SITE_ID},
+        {"$set": {"config": payload.config, "updatedAt": now}},
+        upsert=True,
+    )
+    return {"config": payload.config, "updatedAt": now}
+
+
+@api_router.post("/config/reset")
+async def reset_config():
+    now = datetime.now(timezone.utc).isoformat()
+    await db.site_config.update_one(
+        {"_id": SITE_ID},
+        {"$set": {"config": DEFAULT_CONFIG, "updatedAt": now}},
+        upsert=True,
+    )
+    return {"config": DEFAULT_CONFIG, "updatedAt": now}
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -77,12 +137,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
