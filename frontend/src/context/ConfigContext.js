@@ -56,6 +56,7 @@ export const ConfigProvider = ({ children }) => {
   const setSection = (section, value) => commit({ ...config, [section]: value });
   const updatePath = (section, sub, patch) =>
     commit({ ...config, [section]: { ...config[section], [sub]: { ...config[section][sub], ...patch } } });
+  const applyPatch = (patch) => commit(deepMerge(config, patch));
 
   const undo = () => {
     if (!past.length) return;
@@ -109,7 +110,7 @@ export const ConfigProvider = ({ children }) => {
     <ConfigContext.Provider
       value={{
         config, savedConfig, loading, saving, dirty,
-        updateSection, setSection, updatePath,
+        updateSection, setSection, updatePath, applyPatch,
         undo, redo, canUndo: past.length > 0, canRedo: future.length > 0,
         save, reset, discard, reload: load,
       }}

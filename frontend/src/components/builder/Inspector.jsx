@@ -1,9 +1,12 @@
 import React from "react";
 import { HeaderInspector } from "./HeaderInspector";
 import { AnnouncementInspector, FooterInspector, SectionsInspector } from "./OtherInspectors";
+import { ThemeInspector, BlocksInspector } from "./ThemeBlocks";
 import { MousePointerClick } from "lucide-react";
 
 const TITLES = {
+  theme: "Tema y Tipografía",
+  blocks: "Banco de Bloques",
   announcementBar: "Barra de Anuncios",
   header: "Encabezado",
   footer: "Pie de página",
@@ -29,6 +32,8 @@ export const Inspector = ({ sel, device, onSelect }) => {
       </div>
       <div className="flex-1 overflow-y-auto cms-scroll p-4">
         {section === "header" && <HeaderInspector device={device} sel={sel} onSelect={onSelect} />}
+        {section === "theme" && <ThemeInspector />}
+        {section === "blocks" && <BlocksInspector />}
         {section === "announcementBar" && <AnnouncementInspector />}
         {section === "footer" && <FooterInspector />}
         {section === "sections" && <SectionsInspector />}

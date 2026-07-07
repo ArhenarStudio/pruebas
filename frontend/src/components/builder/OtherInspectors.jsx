@@ -30,6 +30,15 @@ export const AnnouncementInspector = () => {
               <TextInput value={a.linkLabel} onChange={(v) => update(i, { linkLabel: v })} placeholder="Texto enlace" />
               <TextInput value={a.link} onChange={(v) => update(i, { link: v })} placeholder="URL" />
             </div>
+            <div className="mt-2">
+              <SwitchRow label="Colores propios" checked={!!a.bg} onChange={(v) => update(i, v ? { bg: "#3FC16F", color: "#062012" } : { bg: undefined, color: undefined })} testid={`ann-owncolors-${i}`} />
+            </div>
+            {a.bg && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <div><Label>Fondo</Label><ColorInput value={a.bg} onChange={(v) => update(i, { bg: v })} testid={`ann-msg-bg-${i}`} /></div>
+                <div><Label>Texto</Label><ColorInput value={a.color} onChange={(v) => update(i, { color: v })} testid={`ann-msg-text-${i}`} /></div>
+              </div>
+            )}
           </div>
         </RowCard>
       ))}

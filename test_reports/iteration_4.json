@@ -1,0 +1,23 @@
+{
+  "summary": "Iteration 4 — Premium features (Temas, Bloques, Colores por anuncio, Tipografía) validated end-to-end. Backend pytest 5/5 pass on v2 schema; theme.accent=#3FC16F present in defaults. Frontend Playwright: all 49 review scenarios pass (2 initial failures were test-methodology issues, not app bugs — retested and confirmed working).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_config_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ThemeInspector.applyTheme correctly uses applyPatch for a single-commit deep merge across theme/announcementBar/header/footer/cart — undo reverts the whole theme in one step (verified: header bg reverted rgb(10,16,36)->rgb(11,21,16) with single undo).",
+    "deepMerge in ConfigContext treats arrays as override; applyTheme pre-remaps navLinks/actions before applyPatch so per-nav-link colors get replaced consistently (no orphan colors).",
+    "AnnouncementBar per-message override only applies for non-marquee transitions (correct — marquee shows the whole list concatenated). Non-active messages fall back to config.background so rotation shows different colors per slide as designed.",
+    "ColorInput places data-testid on the inner <input type='color'> (not the wrapper) — worth noting for future tests. Native HTMLInputElement value-setter + input+change events required to trigger React onChange in Playwright.",
+    "THEME_PRESETS Rubí and Oro Real use Unicode/spaces — testids become 'theme-Rubí' and 'theme-Oro-Real' (name.replace(/\\s+/g,'-')). Confirmed working with Playwright selectors.",
+    "Storefront root sets --font-heading CSS var + fontFamily for body — .font-heading class on inner <span> (StoreHeader logo) picks it up. store-logo container itself does NOT inherit heading font (only body font) — tests must query the .font-heading span within store-logo, not the container's computed style."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (5/5 pytest)", "frontend": "100% (49/49 review scenarios after retest)"},
+  "test_credentials": "None (no auth).",
+  "seed_data_creation": "None. Tests POST /api/config/reset before/after each block.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "New testids added and verified: tree-theme, tree-blocks, theme-presets, theme-{Esmeralda|Medianoche|Oro-Real|Rubí|Marfil|Violeta}, heading-font, heading-font-<Font>, body-font, body-font-<Font> (spaces->dashes), theme-accent, theme-radius, block-ann-0..3, block-header-0..3, block-footer-0..3, ann-owncolors-0..N, ann-msg-bg-0..N, ann-msg-text-0..N. Inspector titles: 'Tema y Tipografía', 'Banco de Bloques'. Verified via getComputedStyle: applyTheme(Medianoche) changes store-header bg rgb(11,21,16)->rgb(10,16,36), store-announcement-bar bg rgb(76,141,255), store-footer bg rgb(7,11,28). Undo reverts all in one step. block-header-2 (Degradado) sets store-header backgroundImage to linear-gradient(120deg, rgb(11,21,16), rgb(18,32,24)). block-ann-2 (Marquesina) switches transition to marquee (verified via CSS animation-name 'marquee' on inner div). Heading font Fraunces applied to store-logo .font-heading span (computed fontFamily='Fraunces, sans-serif'). Body font Manrope applied to store-header wrapper (fontFamily='Manrope, sans-serif'). Per-message bg: after toggling ann-owncolors-0 ON and setting ann-msg-bg-0 to #FF00AA, announcement bar background becomes rgb(255,0,170) when msg 0 is active (pin via clicking dot 0). Publish persists theme.accent=#9B6BFF via PUT /api/config; Reset restores accent=#3FC16F, Sora/Inter, 4 nav, 3 actions, 3 sections. /store still renders. IMPORTANT for ColorInput tests: data-testid is on the inner <input type='color'>, so set value via native HTMLInputElement.value setter + dispatch input+change events (React controlled input).",
+  "rca of the issue": "N/A — no bugs found. Two initial test failures were caused by (a) querying store-logo container instead of the inner .font-heading <span>, and (b) using a synthetic value setter on the wrong element (wrapper had no querySelector match because testid is on the input itself). Both scenarios pass after correcting the selectors."
+}

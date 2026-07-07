@@ -11,8 +11,23 @@ export function hexToRgba(hex, alpha) {
 
 /* ---------------- Fonts ---------------- */
 export const FONTS = [
-  "Outfit", "Inter", "Space Grotesk", "Playfair Display", "Sora", "DM Sans",
-  "Archivo", "Bricolage Grotesque", "Poppins", "Manrope", "Syne", "Fraunces",
+  "Sora", "Inter", "Outfit", "Space Grotesk", "Manrope", "Fraunces", "Playfair Display", "DM Sans", "Poppins",
+];
+
+/* ---------------- Theme presets (saved looks) ---------------- */
+export const THEME_PRESETS = [
+  { name: "Esmeralda", accent: "#3FC16F", headingFont: "Sora", bodyFont: "Inter",
+    ann: { color: "#3FC16F", text: "#062012" }, header: { color: "#0B1510", text: "#EAF2EC" }, footer: { color: "#081109", text: "#EAF2EC" } },
+  { name: "Medianoche", accent: "#4C8DFF", headingFont: "Space Grotesk", bodyFont: "Inter",
+    ann: { color: "#4C8DFF", text: "#04122E" }, header: { color: "#0A1024", text: "#DCE6FF" }, footer: { color: "#070B1C", text: "#DCE6FF" } },
+  { name: "Oro Real", accent: "#E7B44C", headingFont: "Fraunces", bodyFont: "Manrope",
+    ann: { color: "#E7B44C", text: "#1A1204" }, header: { color: "#0F0D08", text: "#F3E7CC" }, footer: { color: "#0B0906", text: "#F3E7CC" } },
+  { name: "Rubí", accent: "#F04A6B", headingFont: "Outfit", bodyFont: "Inter",
+    ann: { color: "#F04A6B", text: "#2B0410" }, header: { color: "#160209", text: "#FFE1E8" }, footer: { color: "#100106", text: "#FFE1E8" } },
+  { name: "Marfil", accent: "#0B1510", headingFont: "Playfair Display", bodyFont: "Inter",
+    ann: { color: "#0B1510", text: "#FFFFFF" }, header: { color: "#FFFFFF", text: "#0B1510" }, footer: { color: "#F1F1EE", text: "#0B1510" } },
+  { name: "Violeta", accent: "#9B6BFF", headingFont: "Space Grotesk", bodyFont: "DM Sans",
+    ann: { color: "#9B6BFF", text: "#160A2E" }, header: { color: "#120A22", text: "#EADDFF" }, footer: { color: "#0C0718", text: "#EADDFF" } },
 ];
 
 /* ---------------- Backgrounds ---------------- */

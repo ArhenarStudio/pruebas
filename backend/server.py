@@ -23,7 +23,7 @@ api_router = APIRouter(prefix="/api")
 SITE_ID = "site"
 
 DEFAULT_CONFIG: Dict[str, Any] = {
-    "theme": {"headingFont": "Sora", "bodyFont": "Inter", "radius": 10},
+    "theme": {"headingFont": "Sora", "bodyFont": "Inter", "radius": 10, "accent": "#3FC16F"},
     "announcementBar": {
         "enabled": True,
         "transition": "slide",

@@ -1,8 +1,10 @@
 import React from "react";
 import { cx } from "./ui";
-import { Megaphone, LayoutPanelTop, Menu as MenuIcon, LayoutGrid, PanelBottom } from "lucide-react";
+import { Megaphone, LayoutPanelTop, Menu as MenuIcon, LayoutGrid, PanelBottom, Palette, Blocks } from "lucide-react";
 
 const ITEMS = [
+  { section: "theme", label: "Tema", icon: Palette },
+  { section: "blocks", label: "Bloques", icon: Blocks },
   { section: "announcementBar", label: "Barra de Anuncios", icon: Megaphone },
   { section: "header", label: "Encabezado", icon: LayoutPanelTop },
   { section: "header", element: "nav-0", label: "Menú", icon: MenuIcon, key: "menu" },

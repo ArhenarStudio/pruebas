@@ -18,14 +18,17 @@ export const AnnouncementBar = ({ config, onDismiss, dismissed, editable, select
 
   if (!config?.enabled || dismissed || list.length === 0) return null;
 
-  const bgStyle = backgroundStyle(config.background, "#3FC16F");
+  const active = list[Math.min(index, list.length - 1)] || {};
+  const perMsg = transition !== "marquee" && active.bg;
+  const bgStyle = perMsg ? { backgroundColor: active.bg } : backgroundStyle(config.background, "#3FC16F");
+  const textColor = (transition !== "marquee" && active.color) ? active.color : config.textColor;
   const pad = config.paddingY ?? 9;
 
   const renderItem = (a, i) => (
     <span key={i} className="inline-flex items-center gap-2 whitespace-nowrap">
       {a.text}
       {a.linkLabel ? (
-        <a href={a.link || "#"} className="underline underline-offset-2 hover:opacity-80 transition-opacity" style={{ color: config.textColor }}>{a.linkLabel}</a>
+        <a href={a.link || "#"} className="underline underline-offset-2 hover:opacity-80 transition-opacity" style={{ color: textColor }}>{a.linkLabel}</a>
       ) : null}
     </span>
   );
@@ -34,8 +37,8 @@ export const AnnouncementBar = ({ config, onDismiss, dismissed, editable, select
     <div
       data-testid="store-announcement-bar"
       onClick={editable ? (e) => { e.stopPropagation(); onSelect?.("announcementBar"); } : undefined}
-      className={`relative w-full overflow-hidden ${editable ? "sel-hover" : ""} ${selected ? "sel-el" : ""}`}
-      style={{ ...bgStyle, color: config.textColor }}
+      className={`relative w-full overflow-hidden transition-colors duration-500 ${editable ? "sel-hover" : ""} ${selected ? "sel-el" : ""}`}
+      style={{ ...bgStyle, color: textColor }}
     >
       <div className="mx-auto flex max-w-[1400px] items-center justify-center px-8 text-center text-xs sm:text-[13px] font-semibold tracking-wide" style={{ paddingTop: pad, paddingBottom: pad }}>
         {transition === "marquee" ? (
