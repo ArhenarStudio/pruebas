@@ -23,16 +23,22 @@
 - Store owner / marketer configuring their storefront chrome without code.
 
 ## Implemented (2026-06)
-- Config API (GET/PUT/reset) — tested 5/5.
+- Config API (GET/PUT/reset) — tested.
 - CMS builder with live preview, section pills, device toggle, dirty badge, publish/discard/reset.
-- Editors: announcement, header (logo/nav/layout/colors/icons), sticky header (pill/bar, scroll threshold, blur), footer (columns/socials/copyright), cart (labels/accent/free-shipping/images).
-- Storefront `/store` renders saved config; cart drawer add/inc/dec/remove/subtotal + free-shipping progress; announcement dismiss; sticky pill on scroll.
-- Verified end-to-end by testing agent: backend 100%, frontend 100%.
+- Editors: announcement, header, sticky header, footer, cart.
+- Storefront `/store` renders saved config; cart drawer; announcement dismiss; sticky pill on scroll.
+
+### Iteration 2 (2026-06) — Interactive builder + banks (tested 100% backend & frontend)
+- **Interactive preview**: click any component in the preview to select it — blue selection outline + labeled badge, auto-opens that component's editor (announcement/header/footer/sticky).
+- **Rich announcement bar**: multiple announcements (add/reorder/remove), each with own text + link; transitions Slide/Fade/Marquee/None + auto-rotate interval; height (padding) control.
+- **Background system (reusable)**: Solid / Gradient (from-to + angle + presets) / Pattern bank (dots, grid, diagonal, crosshatch, stripes, zigzag) + Emoji-pattern with opacity/scale. Applied to announcement bar & header.
+- **Link state banks (header nav)**: hover-animation bank (underline/scale/slide-up/glow/highlight), border bank (box/pill/bottom), hover color, per-link emoji/icons.
+- **Size controls**: height (padding) sliders for announcement bar and header.
 
 ## Backlog
-- P1: Persist cart to backend; multiple pages/sections; drag-reorder nav & footer columns.
-- P2: Auth for admin; image upload for logo/products; theme presets; publish history/versioning.
-- P2: Real product catalog CRUD in CMS.
+- P1: Apply background system + size controls to footer & sticky pill; drag-reorder nav/footer.
+- P2: Reusable block/component bank & saved presets; per-announcement background/colors.
+- P2: Auth for admin; image upload; product catalog CRUD; publish versioning.
 
 ## Next Tasks
 - Await user feedback; consider auth + image upload if user wants production readiness.
