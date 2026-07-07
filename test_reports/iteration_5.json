@@ -1,0 +1,39 @@
+{
+  "summary": "Verified draggable HEADER BLOCK reordering (Logo/Nav/Actions) in the sidebar HeaderInspector and its effect on the storefront header. Primary DnD reorder verified via synthesized dragstart/dragover/drop events with shared DataTransfer. Block order in inspector and horizontal positions in storefront both update as expected; blockOrder is persisted via PUT /api/config and restored by Reset. /store also honors blockOrder.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/store (non-editable) StoreHeader", "issues": ["store-logo data-testid is only emitted when editable=true (added via pick()), while store-nav and store-actions are hard-coded and always present. Minor inconsistency — for parity add data-testid='store-logo' unconditionally so external assertions on public storefront can locate the logo block."]}
+    ]
+  },
+  "verified_flows": [
+    "header-inspector visible with three blocks in order [hdr-block-logo, hdr-block-nav, hdr-block-actions]",
+    "drag handles present (block-drag-logo/nav/actions) and hint 'Arrastra los bloques...' shown",
+    "position badges: '1º · Izquierda', '2º · Centro', '3º · Derecha'",
+    "Dragging block-drag-actions onto hdr-block-logo title-bar reorders inspector to [actions, logo, nav]",
+    "store-header re-renders: store-actions.x (285) becomes < store-logo.x (561) < store-nav.x (838) after reorder",
+    "Block reorder does NOT change nested nav-link order and vice-versa (block order intact after nested test)",
+    "Selection sync: store-logo -> logo-mode visible; store-nav-0 -> nav-href-0 visible; store-action-0 -> action-href-0 visible",
+    "nav-add disabled when navLinks reaches NAV_MAX (7)",
+    "publish (PUT /api/config) returns 200 with header.blockOrder=['actions','logo','nav'] persisted",
+    "reset restores header.blockOrder to ['logo','nav','actions']",
+    "/store route respects blockOrder: store-actions.x (~124) < store-nav.x (~1119) after publishing reordered blockOrder"
+  ],
+  "test_report_links": ["/app/test_reports/iteration_5.json"],
+  "action_items": [
+    "(Minor) Emit data-testid='store-logo' on StoreHeader logo unconditionally (not gated by editable), matching store-nav/store-actions."
+  ],
+  "critical_code_review_comments": [
+    "StoreHeader logo testid gated by editable via pick() while nav/actions testids are hard-coded — asymmetric.",
+    "useDnd relies on native HTML5 DnD; documented workaround (dispatch dragstart/dragover/drop with shared DataTransfer) works but this makes automation fragile. Consider a pointer-based DnD lib for stronger E2E resilience.",
+    "HeaderInspector.jsx is approaching size limits (~197 lines) — still OK, but ACTION_PRESETS/BLOCK_META could move to a constants file for reuse."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% for primary DnD block-reorder criteria; test-script false negatives on 3 regression items (product features confirmed working via alternate observations)"},
+  "seed_data_creation": "None. Reset+Publish executed at end to restore default blockOrder.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Header inspector block-level DnD works. On /store, store-logo has NO data-testid because pick() is gated by editable — assert /store block order via store-actions and store-nav positions (or use CSS to locate logo). To trigger DnD in Playwright use JS-dispatch of DragEvent with a shared DataTransfer against the block-drag-* handle and the block title-bar (first child div inside hdr-block-*)."
+}

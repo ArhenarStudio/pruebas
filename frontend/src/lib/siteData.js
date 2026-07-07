@@ -20,6 +20,7 @@ export const defaultConfig = {
   },
   header: {
     logo: { mode: "image-text", text: "LotoCorp", image: "", size: 22, offsetX: 0, offsetY: 0, position: "inside", verified: true, verifiedIcon: "check", center: false },
+    blockOrder: ["logo", "nav", "actions"],
     navLinks: [
       { label: "Sorteos", href: "#", normalColor: "#EAF2EC", hoverColor: "#3FC16F", activeColor: "#3FC16F" },
       { label: "Ganadores", href: "#", normalColor: "#EAF2EC", hoverColor: "#3FC16F", activeColor: "#3FC16F" },

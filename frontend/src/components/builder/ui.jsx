@@ -97,7 +97,7 @@ export function useDnd(onReorder) {
   });
   const rowProps = (index) => ({
     onDragOver: (e) => e.preventDefault(),
-    onDrop: (e) => { e.preventDefault(); const from = dragIndex.current; if (from == null || from === index) return; onReorder(from, index); dragIndex.current = null; },
+    onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const from = dragIndex.current; if (from == null || from === index) return; onReorder(from, index); dragIndex.current = null; },
   });
   return { handleProps, rowProps };
 }

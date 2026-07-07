@@ -79,6 +79,9 @@ export const StoreHeader = ({ config, cartCount = 0, onCartClick, editable, sel,
     </div>
   );
 
+  const blocks = { logo: LogoEl, nav: NavEl, actions: ActionsEl };
+  const order = (config.blockOrder && config.blockOrder.length ? config.blockOrder : ["logo", "nav", "actions"]).filter((id) => blocks[id]);
+
   const inner = logo.center && !isMobile ? (
     <div className="grid grid-cols-3 items-center" style={{ paddingTop: pad, paddingBottom: pad }}>
       <div className="flex justify-start">{NavEl}</div>
@@ -86,13 +89,14 @@ export const StoreHeader = ({ config, cartCount = 0, onCartClick, editable, sel,
       <div className="flex justify-end">{ActionsEl}</div>
     </div>
   ) : (
-    <div className="flex items-center justify-between gap-4" style={{ paddingTop: pad, paddingBottom: pad }}>
-      <div className="flex items-center gap-8">
-        {isMobile && <button className="text-current" aria-label="Menú" data-testid="store-hamburger" style={{ color: shell.textColor }}><Menu size={22} /></button>}
-        {LogoEl}
-        {NavEl}
-      </div>
-      {ActionsEl}
+    <div className="flex items-center gap-6" style={{ paddingTop: pad, paddingBottom: pad }}>
+      {isMobile && <button className="text-current" aria-label="Menú" data-testid="store-hamburger" style={{ color: shell.textColor }}><Menu size={22} /></button>}
+      {order.map((id, idx) => (
+        <React.Fragment key={id}>
+          {idx === order.length - 1 && order.length > 1 && <div className="flex-1" />}
+          {blocks[id]}
+        </React.Fragment>
+      ))}
     </div>
   );
 

@@ -48,6 +48,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
             "offsetX": 0, "offsetY": 0, "position": "inside", "verified": True,
             "verifiedIcon": "check", "center": False,
         },
+        "blockOrder": ["logo", "nav", "actions"],
         "navLinks": [
             {"label": "Sorteos", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
             {"label": "Ganadores", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
