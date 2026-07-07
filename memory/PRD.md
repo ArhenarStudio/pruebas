@@ -46,8 +46,14 @@
 - **Undo/redo** history; rifa storefront (sorteos/ganadores/cómo participar); backend API contract unchanged.
 
 ## Remaining backlog
-- P2: Reusable block/preset bank & saved themes; per-announcement colors; global typography editor.
-- P2: Auth, image upload, real sorteo catalog CRUD, publish versioning.
+- P2: real sorteo catalog CRUD, publish versioning.
+
+### Iteration 4 (2026-06) — Premium: Temas, Bloques, Colores por anuncio, Tipografía (tested 100%: backend 5/5, frontend 49/49)
+- **Temas guardados globales**: 6 presets (Esmeralda/Medianoche/Oro Real/Rubí/Marfil/Violeta) que cambian anuncio+header+footer+acento+fuentes en UN clic (via `applyPatch`, deshacer en un paso).
+- **Banco de bloques**: presets por componente (Barra de anuncios, Encabezado, Pie de página) con swatch de vista previa, aplican fondo/estilo al instante.
+- **Colores por anuncio**: cada mensaje puede tener su propio fondo/texto que se muestra al rotar (no-marquee).
+- **Editor de tipografía global**: selector de fuente de títulos y de texto (9 fuentes), color de acento y redondeo global.
+- Nuevo `applyPatch` en ConfigContext (deep-merge multi-sección, un solo commit de historial). Items de árbol: Tema, Bloques.
 
 ## Next Tasks
 - Await user feedback; consider auth + image upload if user wants production readiness.
