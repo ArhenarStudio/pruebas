@@ -37,8 +37,17 @@
 
 ## Backlog
 - P1: Apply background system + size controls to footer & sticky pill; drag-reorder nav/footer.
-- P2: Reusable block/component bank & saved presets; per-announcement background/colors.
-- P2: Auth for admin; image upload; product catalog CRUD; publish versioning.
+
+### Iteration 3 (2026-06) — Sorthea Studio "Visual Order v2" (tested 100%: backend 5/5, frontend 51/51)
+- Full editor redesign: 3 zones — TOP BAR (Sorthea green, device toggle, undo/redo, Vista previa, Publicar), LEFT structure tree (~240px), CENTER dark rifa/sorteo storefront (LotoCorp), RIGHT contextual inspector (~360px). Spanish UI.
+- **Visual Order principle**: inspector row order mirrors site left→right; click canvas element ↔ highlight inspector row (bidirectional sync); empty state "Selecciona un elemento en el lienzo".
+- **Header Visual Order inspector**: Logo row (mode/position/center/size/X-Y/verified), Navigation rows (drag reorder, per-link normal/hover/active colors, capacity rules: ≤5@14px, 6+ auto-shrink to 11px min, amber overflow warning, block 8th "Límite alcanzado", fit meter), Action rows (button/icon/icon-badge, presets Comprar/Cuenta/Carrito/Pagos, max 3 desktop/2 mobile), Header shell accordion (height/sticky/shadow/pill/background engine).
+- **Responsive**: device toggle affects canvas + inspector; mobile hamburger, icon-only actions, "Móvil: iconos" badge, long-label warnings.
+- **Undo/redo** history; rifa storefront (sorteos/ganadores/cómo participar); backend API contract unchanged.
+
+## Remaining backlog
+- P2: Reusable block/preset bank & saved themes; per-announcement colors; global typography editor.
+- P2: Auth, image upload, real sorteo catalog CRUD, publish versioning.
 
 ## Next Tasks
 - Await user feedback; consider auth + image upload if user wants production readiness.
