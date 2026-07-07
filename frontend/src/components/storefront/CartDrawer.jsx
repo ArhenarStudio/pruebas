@@ -1,5 +1,5 @@
 import React from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
 
 export const CartDrawer = ({ config, open, onOpenChange, items, onInc, onDec, onRemove }) => {
@@ -20,6 +20,7 @@ export const CartDrawer = ({ config, open, onOpenChange, items, onInc, onDec, on
             <ShoppingBag size={18} strokeWidth={1.6} /> {config.title}
             <span className="text-sm font-normal text-[#525252]">({items.reduce((s, i) => s + i.qty, 0)})</span>
           </SheetTitle>
+          <SheetDescription className="sr-only">Review the items in your shopping cart and proceed to checkout.</SheetDescription>
         </SheetHeader>
 
         {threshold > 0 && items.length > 0 && (
