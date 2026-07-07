@@ -1,9 +1,10 @@
 import React from "react";
 import { ShoppingBag } from "lucide-react";
 
-export const StickyPill = ({ config, visible, cartCount = 0, onCartClick }) => {
+export const StickyPill = ({ config, visible, cartCount = 0, onCartClick, editable = false, selected = false, onSelect }) => {
   if (!config?.enabled) return null;
   const isPill = config.style === "pill";
+  const show = visible || (editable && selected);
 
   const baseStyle = {
     backgroundColor: config.blur ? hexToRgba(config.bgColor, 0.72) : config.bgColor,
@@ -16,15 +17,19 @@ export const StickyPill = ({ config, visible, cartCount = 0, onCartClick }) => {
     <div
       data-testid="store-sticky-header"
       className={`pointer-events-none absolute left-0 right-0 top-0 z-40 flex justify-center transition-all duration-300 ${
-        visible ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+        show ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
       }`}
     >
       <div
-        className={`pointer-events-auto mt-4 flex items-center gap-4 border ${
+        onClick={editable ? (e) => { e.stopPropagation(); onSelect?.("stickyHeader"); } : undefined}
+        className={`pointer-events-auto relative mt-4 flex items-center gap-4 border ${editable ? "cursor-pointer" : ""} ${selected ? "sel-outline" : ""} ${
           isPill ? "rounded-full px-5 py-2.5" : "rounded-none w-[92%] max-w-[1200px] justify-between px-6 py-3"
         }`}
         style={{ ...baseStyle, borderColor: "rgba(0,0,0,0.08)" }}
       >
+        {editable && selected && (
+          <span className="pointer-events-none absolute -top-3 left-3 bg-[#002FA7] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Sticky Header</span>
+        )}
         <span className="font-heading text-sm font-semibold tracking-tight" data-testid="store-sticky-label">
           {config.pillLabel}
         </span>

@@ -1,0 +1,31 @@
+{
+  "summary": "Iteration 2: verified interactive preview + multi-announcement + transitions + background bank + link-style banks + persistence. Backend pytest 6/6 pass (extended for new schema). Frontend Playwright: all 20 flows in review request pass — select-announcementBar/select-header/select-footer overlays select the correct editor with sel-outline + badge, multiple announcements add/edit/remove works, transitions (Slide/Fade/Marquee/None) apply (marquee CSS anim present), gradient/pattern backgrounds produce linear-gradient/repeating background-image on the bar (verified via getComputedStyle), header LinkStyleControl banks (6 animations, 4 borders, hover color, showIcon) toggle icon fields, header BackgroundControl + padding slider present, sticky pill visible + selectable when Sticky Header section active (uses testid store-sticky-header, not store-sticky-pill), Publish persists via PUT /api/config and Reset restores 2 defaults, /store reflects saved config, cart add/inc/dec/remove and announcement dismiss regressions OK.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Builder — announcement bar overlay", "issues": ["Sticky Pill (when stickyHeader section is active) is absolutely positioned at top:0 and visually overlaps the announcement bar's center. Clicking the announcement bar center hits the pill instead of the announcement overlay. The overlay is still clickable via left/right edges, but consider z-ordering the pill BELOW the announcement select-overlay or reserving a horizontal gap so center clicks reach the announcement bar."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_config_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "(Minor UX) On builder route, the sticky pill overlaps the announcement bar's horizontal center when Sticky Header section is active, intercepting clicks on the announcement bar overlay. Consider raising the sticky pill's top offset, or lowering its z-index below the section-select overlay, or hiding the pill unless the user has scrolled AND stickyHeader is not the active section.",
+    "(Nit) DialogDescription/aria-describedby still missing on CartDrawer's DialogContent (Radix a11y warning from iteration_1) — non-blocking."
+  ],
+  "critical_code_review_comments": [
+    "Storefront.jsx Selectable overlay uses z-30 and covers absolute inset-0 which is correct, but the ancestor `store-header` and other sub-components must remain in z-stacking below the overlay — verified OK.",
+    "AnnouncementBar transitions: for `none` transition, the auto-rotate interval is correctly disabled; note that when transition==='none' only the first announcement is shown (index locked to 0). This is acceptable but should be documented.",
+    "backgroundStyle util correctly returns a `backgroundImage` linear-gradient for gradient type and repeating background-image for pattern; getComputedStyle confirms both.",
+    "server.py: PUT /api/config still lacks a strict schema — acceptable, and reset restores DEFAULT_CONFIG including 2 announcements and full linkStyle object. Verified.",
+    "StickyPill uses testid `store-sticky-header` not `store-sticky-pill` — review other agents/tests should use the correct testid."
+  ],
+  "updated_files": ["/app/backend/tests/test_config_api.py"],
+  "success_rate": {"backend": "100% (6/6 pytest)", "frontend": "100% (20/20 review scenarios)"},
+  "test_credentials": "None (no auth).",
+  "seed_data_creation": "None. Test flow calls POST /api/config/reset before/after to restore defaults.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Sticky pill testid is `store-sticky-header` (not `store-sticky-pill`). To click the announcement/header/footer select-overlays, avoid the center coordinate on the announcement row (Sticky Pill overlays center); click left/right edges, and use scrollIntoView on the footer overlay before clicking. The 3 background tabs use testids `{prefix}-bg-type-{solid|gradient|pattern}` and pattern grid is `{prefix}-bg-patterns`. LinkStyle banks: `hdr-linkstyle-anim` (6 buttons), `hdr-linkstyle-border` (4 buttons), `hdr-linkstyle-hovercolor`, `hdr-linkstyle-showicon`. Toggling showicon reveals `hdr-nav-icon-{i}` on each nav row.",
+  "rca of the issue": "N/A — no blocking issues. Only a minor UX overlap between sticky pill and announcement select overlay in builder when stickyHeader is active."
+}

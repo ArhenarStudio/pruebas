@@ -123,7 +123,7 @@ export default function Builder() {
               </div>
             </div>
             <div className="flex-1 overflow-hidden">
-              <Storefront config={config} />
+              <Storefront config={config} editable={true} activeSection={active} onSelect={setActive} />
             </div>
           </div>
         </main>

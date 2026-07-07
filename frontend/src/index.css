@@ -64,3 +64,40 @@ body {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
+
+/* ---- Link state banks (uses --lnk / --lnk-hover CSS vars set inline) ---- */
+.lnk {
+    position: relative;
+    color: var(--lnk, inherit);
+    transition: color .2s ease, transform .2s ease, text-shadow .2s ease, background-color .2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.lnk:hover { color: var(--lnk-hover, inherit); }
+.lnk:active { color: var(--lnk-active, var(--lnk-hover, inherit)); }
+
+/* animations */
+.lnk-underline::after {
+    content: ""; position: absolute; left: 0; bottom: -3px; height: 1.5px; width: 100%;
+    background: var(--lnk-hover, currentColor); transform: scaleX(0); transform-origin: left;
+    transition: transform .25s ease;
+}
+.lnk-underline:hover::after { transform: scaleX(1); }
+.lnk-scale:hover { transform: scale(1.08); }
+.lnk-slide-up:hover { transform: translateY(-2px); }
+.lnk-glow:hover { text-shadow: 0 0 10px var(--lnk-hover, currentColor); }
+.lnk-highlight { padding: 2px 6px; }
+.lnk-highlight:hover { background: var(--lnk-hover, currentColor); color: #fff !important; }
+
+/* borders */
+.lnkb-box { border: 1px solid transparent; padding: 4px 10px; }
+.lnkb-box:hover { border-color: var(--lnk-hover, currentColor); }
+.lnkb-pill { border: 1px solid transparent; padding: 4px 12px; border-radius: 9999px; }
+.lnkb-pill:hover { border-color: var(--lnk-hover, currentColor); }
+.lnkb-bottom { border-bottom: 1px solid transparent; padding-bottom: 3px; }
+.lnkb-bottom:hover { border-bottom-color: var(--lnk-hover, currentColor); }
+
+/* editor selection */
+.sel-outline { outline: 2px solid #002FA7; outline-offset: -2px; }
+.sel-hover:hover { outline: 2px dashed rgba(0,47,167,.45); outline-offset: -2px; }

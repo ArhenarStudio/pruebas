@@ -5,6 +5,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Plus, Trash2 } from "lucide-react";
+import { PATTERNS, GRADIENT_PRESETS, EMOJI_BANK, LINK_ANIMATIONS, LINK_BORDERS } from "@/lib/appearance";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const inputCls = "rounded-none border-[#E5E5E5] focus-visible:ring-1 focus-visible:ring-black text-sm";
 
@@ -106,6 +108,130 @@ export const LinkListEditor = ({ label, items, onChange, fields = ["label", "hre
           <Plus size={13} /> Add
         </button>
       </div>
+    </div>
+  );
+};
+
+export const EmojiField = ({ label, value, onChange, testid }) => (
+  <div>
+    {label ? <LabelRow>{label}</LabelRow> : null}
+    <div className="flex items-center gap-2 border border-[#E5E5E5]">
+      <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="none" className="flex-1 bg-transparent px-2 py-2 text-sm outline-none" data-testid={testid} />
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="h-9 border-l border-[#E5E5E5] px-3 text-sm hover:bg-[#F7F7F7]" data-testid={`${testid}-open`}>{value || "😀"}</button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56 rounded-none border-[#E5E5E5] p-2">
+          <div className="grid grid-cols-6 gap-1">
+            {EMOJI_BANK.map((e) => (
+              <button key={e} onClick={() => onChange(e)} className="flex h-8 w-8 items-center justify-center text-lg hover:bg-[#F7F7F7]">{e}</button>
+            ))}
+            <button onClick={() => onChange("")} className="col-span-6 border border-[#E5E5E5] py-1 text-xs text-[#525252] hover:bg-[#F7F7F7]">Clear</button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  </div>
+);
+
+export const BackgroundControl = ({ label, value, onChange, testidPrefix }) => {
+  const bg = value || { type: "solid", color: "#000000" };
+  const set = (patch) => onChange({ ...bg, ...patch });
+  const setGradient = (patch) => onChange({ ...bg, gradient: { ...(bg.gradient || {}), ...patch } });
+  const setPattern = (patch) => onChange({ ...bg, pattern: { ...(bg.pattern || {}), ...patch } });
+  const tabs = [{ id: "solid", label: "Solid" }, { id: "gradient", label: "Gradient" }, { id: "pattern", label: "Pattern" }];
+
+  return (
+    <div className="border border-[#E5E5E5] p-3" data-testid={testidPrefix}>
+      <LabelRow>{label}</LabelRow>
+      <div className="mb-3 grid grid-cols-3 gap-1">
+        {tabs.map((t) => (
+          <button key={t.id} onClick={() => set({ type: t.id })} data-testid={`${testidPrefix}-type-${t.id}`}
+            className={`border px-2 py-1.5 text-xs font-medium transition-colors ${bg.type === t.id ? "border-[#0A0A0A] bg-[#0A0A0A] text-white" : "border-[#E5E5E5] text-[#525252] hover:bg-[#F7F7F7]"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {bg.type === "solid" && (
+        <ColorField label="Color" value={bg.color} onChange={(v) => set({ color: v })} testid={`${testidPrefix}-color`} />
+      )}
+
+      {bg.type === "gradient" && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <ColorField label="From" value={bg.gradient?.from} onChange={(v) => setGradient({ from: v })} />
+            <ColorField label="To" value={bg.gradient?.to} onChange={(v) => setGradient({ to: v })} />
+          </div>
+          <SliderField label="Angle" value={bg.gradient?.angle ?? 90} min={0} max={360} step={5} suffix="°" onChange={(v) => setGradient({ angle: v })} />
+          <div className="flex flex-wrap gap-1.5">
+            {GRADIENT_PRESETS.map((g, i) => (
+              <button key={i} onClick={() => setGradient(g)} className="h-7 w-7 border border-[#E5E5E5]" style={{ backgroundImage: `linear-gradient(${g.angle}deg, ${g.from}, ${g.to})` }} title="preset" />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {bg.type === "pattern" && (
+        <div className="space-y-3">
+          <ColorField label="Base color" value={bg.color} onChange={(v) => set({ color: v })} />
+          <div>
+            <LabelRow>Pattern</LabelRow>
+            <div className="grid grid-cols-4 gap-1" data-testid={`${testidPrefix}-patterns`}>
+              {PATTERNS.map((p) => (
+                <button key={p.id} onClick={() => setPattern({ id: p.id })}
+                  className={`border px-1 py-1.5 text-[10px] font-medium ${bg.pattern?.id === p.id ? "border-[#0A0A0A] bg-[#0A0A0A] text-white" : "border-[#E5E5E5] text-[#525252] hover:bg-[#F7F7F7]"}`}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {bg.pattern?.id === "emoji" ? (
+            <EmojiField label="Emoji" value={bg.pattern?.emoji} onChange={(v) => setPattern({ emoji: v })} testid={`${testidPrefix}-emoji`} />
+          ) : bg.pattern?.id && bg.pattern?.id !== "none" ? (
+            <ColorField label="Pattern color" value={bg.pattern?.patternColor} onChange={(v) => setPattern({ patternColor: v })} />
+          ) : null}
+          {bg.pattern?.id && bg.pattern?.id !== "none" && (
+            <>
+              <SliderField label="Opacity" value={Math.round((bg.pattern?.opacity ?? 0.12) * 100)} min={2} max={100} step={2} suffix="%" onChange={(v) => setPattern({ opacity: v / 100 })} />
+              <SliderField label="Scale" value={bg.pattern?.size ?? 20} min={8} max={80} step={2} suffix="px" onChange={(v) => setPattern({ size: v })} />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const LinkStyleControl = ({ value, onChange, testidPrefix }) => {
+  const s = value || {};
+  const set = (patch) => onChange({ ...s, ...patch });
+  return (
+    <div className="space-y-4">
+      <div>
+        <LabelRow>Hover animation</LabelRow>
+        <div className="grid grid-cols-3 gap-1" data-testid={`${testidPrefix}-anim`}>
+          {LINK_ANIMATIONS.map((a) => (
+            <button key={a.id} onClick={() => set({ animation: a.id })}
+              className={`border px-2 py-1.5 text-[11px] font-medium ${s.animation === a.id ? "border-[#0A0A0A] bg-[#0A0A0A] text-white" : "border-[#E5E5E5] text-[#525252] hover:bg-[#F7F7F7]"}`}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <LabelRow>Border style</LabelRow>
+        <div className="grid grid-cols-4 gap-1" data-testid={`${testidPrefix}-border`}>
+          {LINK_BORDERS.map((b) => (
+            <button key={b.id} onClick={() => set({ border: b.id })}
+              className={`border px-2 py-1.5 text-[11px] font-medium ${s.border === b.id ? "border-[#0A0A0A] bg-[#0A0A0A] text-white" : "border-[#E5E5E5] text-[#525252] hover:bg-[#F7F7F7]"}`}>
+              {b.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <ColorField label="Hover color" value={s.hoverColor} onChange={(v) => set({ hoverColor: v })} testid={`${testidPrefix}-hovercolor`} />
+      <SwitchRow label="Show link icons" checked={s.showIcon} onChange={(v) => set({ showIcon: v })} testid={`${testidPrefix}-showicon`} />
     </div>
   );
 };
