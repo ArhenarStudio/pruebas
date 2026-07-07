@@ -1,0 +1,22 @@
+{
+  "summary": "Iteration 3 — Sorthea Studio v2 (Visual Order redesign). Backend pytest 5/5 pass on the v2 schema (header.logo/navLinks/actions/shell; sections; footer; announcementBar with backgrounds+announcements). Frontend Playwright: 51/51 scenarios from the review request pass — Builder opens with Encabezado, three-zone layout intact; LEFT TREE (announcementBar/header/menu/sections/footer) switches inspector title; SYNC canvas→inspector for store-logo/store-nav-*/store-action-*/store-announcement-bar/store-footer works; SYNC inspector→canvas paints sel-el outline on the correct canvas element; LOGO controls (mode/text/position/center/size/x/y/verified) reflect on canvas; NAV capacity (fit-meter green@4, amber@6, red@7, Límite alcanzado + nav-add disabled at NAV_MAX=7); ACTIONS (3/3 count, presets disabled at 3, add/remove works); SHELL accordion + BackgroundEngine gradient updates store-header backgroundImage to linear-gradient; RESPONSIVE mobile: hamburger visible, text nav hidden, action-count /2, action-mobile-badge-*, action-label-warning-* for long labels; ANNOUNCEMENT add/edit/remove/transition/marquee reflects on canvas; FOOTER brand edit reflects on canvas; SECTIONS toggle hides store-section-sorteos; UNDO/REDO work and buttons disable correctly; PUBLISH persists via PUT /api/config and toggles to 'Publicado' disabled state; RESET restores 4 nav + 3 actions + 3 sections; /store renders full storefront with rotating announcements and sorteo-add-s1 opens store-cart-drawer; empty inspector state shown on blank-canvas click.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_config_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ConfigContext deepMerge treats arrays as override (correct) so PUT responses that shrink arrays behave as expected; verified with nav/announcements/sections length changes.",
+    "server.py PUT /api/config still lacks strict Pydantic validation of nested config schema — acceptable for a config-as-blob CMS.",
+    "Storefront wrapClick clears selection when clicking blank storefront background; StoreHeader/StoreBody sub-elements call stopPropagation correctly so canvas-to-inspector sync stays accurate.",
+    "LeftTree isActive logic uses `element` startsWith('nav') — works for menu vs header distinction; small ambiguity if a future non-nav element name also starts with 'nav', low risk.",
+    "headerFit rules (NAV_MAX=7, ACTION_MAX_DESKTOP=3, ACTION_MAX_MOBILE=2, MOBILE_LABEL_MAX=8) are consistent between inspector and StoreHeader; nav-add correctly disabled at NAV_MAX."
+  ],
+  "updated_files": ["/app/backend/tests/test_config_api.py"],
+  "success_rate": {"backend": "100% (5/5 pytest)", "frontend": "100% (51/51 review scenarios)"},
+  "test_credentials": "None (no auth).",
+  "seed_data_creation": "None. Tests call POST /api/config/reset before/after to restore v2 defaults.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "v2 schema is header.{logo{mode,text,image,size,offsetX,offsetY,position,verified,verifiedIcon,center}, navLinks[], actions[], shell{paddingY,sticky,shadow,pill,textColor,background{type,color,gradient,pattern}}}. Selection {section, element}. Key testids: tree-{announcementBar|header|menu|sections|footer}, inspector-title, store-{logo|nav-i|action-i|announcement-bar|footer|hamburger|header}, hdr-row-{logo|nav-i|action-i|shell}, fit-meter[data-status=green|amber|red], nav-capacity-warning, action-count, action-mobile-badge-i, action-label-warning-i, {shell|ann|ftr}-bg-type-{solid|gradient|pattern}. Empty state via clicking storefront outer wrapper (stopPropagation on inner canvas elements). Note: on mobile with default 3 actions, action-count reads '3/2' (already over limit) — a warning is shown; adding actions is still disabled when count>=3.",
+  "rca of the issue": "N/A — no blocking issues found."
+}

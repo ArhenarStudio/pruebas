@@ -22,8 +22,10 @@ const deepMerge = (base, override) => {
 };
 
 export const ConfigProvider = ({ children }) => {
-  const [config, setConfig] = useState(defaultConfig);
+  const [config, setConfigState] = useState(defaultConfig);
   const [savedConfig, setSavedConfig] = useState(defaultConfig);
+  const [past, setPast] = useState([]);
+  const [future, setFuture] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -31,8 +33,10 @@ export const ConfigProvider = ({ children }) => {
     try {
       const res = await axios.get(`${API}/config`);
       const merged = deepMerge(defaultConfig, res.data.config || {});
-      setConfig(merged);
+      setConfigState(merged);
       setSavedConfig(merged);
+      setPast([]);
+      setFuture([]);
     } catch (e) {
       console.error("Failed to load config", e);
     } finally {
@@ -40,16 +44,32 @@ export const ConfigProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
-  const updateSection = (section, patch) => {
-    setConfig((prev) => ({ ...prev, [section]: { ...prev[section], ...patch } }));
+  const commit = (next) => {
+    setPast((p) => [...p.slice(-49), config]);
+    setFuture([]);
+    setConfigState(next);
   };
 
-  const setSection = (section, value) => {
-    setConfig((prev) => ({ ...prev, [section]: value }));
+  const updateSection = (section, patch) => commit({ ...config, [section]: { ...config[section], ...patch } });
+  const setSection = (section, value) => commit({ ...config, [section]: value });
+  const updatePath = (section, sub, patch) =>
+    commit({ ...config, [section]: { ...config[section], [sub]: { ...config[section][sub], ...patch } } });
+
+  const undo = () => {
+    if (!past.length) return;
+    const prev = past[past.length - 1];
+    setPast((p) => p.slice(0, -1));
+    setFuture((f) => [config, ...f]);
+    setConfigState(prev);
+  };
+  const redo = () => {
+    if (!future.length) return;
+    const next = future[0];
+    setFuture((f) => f.slice(1));
+    setPast((p) => [...p, config]);
+    setConfigState(next);
   };
 
   const save = async () => {
@@ -72,21 +92,27 @@ export const ConfigProvider = ({ children }) => {
     try {
       const res = await axios.post(`${API}/config/reset`);
       const merged = deepMerge(defaultConfig, res.data.config || {});
-      setConfig(merged);
+      setConfigState(merged);
       setSavedConfig(merged);
+      setPast([]);
+      setFuture([]);
       return true;
     } finally {
       setSaving(false);
     }
   };
 
-  const discard = () => setConfig(savedConfig);
-
+  const discard = () => { setConfigState(savedConfig); setPast([]); setFuture([]); };
   const dirty = JSON.stringify(config) !== JSON.stringify(savedConfig);
 
   return (
     <ConfigContext.Provider
-      value={{ config, savedConfig, loading, saving, dirty, updateSection, setSection, save, reset, discard, reload: load }}
+      value={{
+        config, savedConfig, loading, saving, dirty,
+        updateSection, setSection, updatePath,
+        undo, redo, canUndo: past.length > 0, canRedo: future.length > 0,
+        save, reset, discard, reload: load,
+      }}
     >
       {children}
     </ConfigContext.Provider>

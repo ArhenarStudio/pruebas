@@ -23,82 +23,76 @@ api_router = APIRouter(prefix="/api")
 SITE_ID = "site"
 
 DEFAULT_CONFIG: Dict[str, Any] = {
+    "theme": {"headingFont": "Sora", "bodyFont": "Inter", "radius": 10},
     "announcementBar": {
         "enabled": True,
         "transition": "slide",
         "interval": 4000,
-        "paddingY": 10,
+        "paddingY": 9,
         "dismissible": True,
-        "textColor": "#FFFFFF",
+        "textColor": "#062012",
         "background": {
             "type": "solid",
-            "color": "#0A0A0A",
-            "gradient": {"from": "#002FA7", "to": "#0A0A0A", "angle": 90},
-            "pattern": {"id": "none", "patternColor": "#FFFFFF", "opacity": 0.12, "size": 20, "emoji": "✦"},
+            "color": "#3FC16F",
+            "gradient": {"from": "#3FC16F", "to": "#0B1510", "angle": 90},
+            "pattern": {"id": "none", "patternColor": "#FFFFFF", "opacity": 0.12, "size": 20, "emoji": "🎉"},
         },
         "announcements": [
-            {"text": "Free worldwide shipping on orders over $150 — Ends Sunday.", "linkLabel": "Shop the sale", "link": "#"},
-            {"text": "New Spring Collection just landed — 40+ new pieces.", "linkLabel": "Explore", "link": "#"},
+            {"text": "🎉 Gran Sorteo LotoCorp — ¡Boletos desde $150 MXN!", "linkLabel": "Comprar ahora", "link": "#"},
+            {"text": "🚚 Enviamos el premio a todo México sin costo", "linkLabel": "Ver bases", "link": "#"},
         ],
     },
     "header": {
-        "logoText": "MERIDIAN",
-        "logoImage": "",
-        "navLinks": [
-            {"label": "New In", "href": "#", "icon": ""},
-            {"label": "Furniture", "href": "#", "icon": ""},
-            {"label": "Lighting", "href": "#", "icon": ""},
-            {"label": "Journal", "href": "#", "icon": ""},
-        ],
-        "layout": "logo-left",
-        "paddingY": 16,
-        "bgColor": "#FFFFFF",
-        "textColor": "#0A0A0A",
-        "background": {
-            "type": "solid",
-            "color": "#FFFFFF",
-            "gradient": {"from": "#FFFFFF", "to": "#F7F7F7", "angle": 90},
-            "pattern": {"id": "none", "patternColor": "#0A0A0A", "opacity": 0.06, "size": 20, "emoji": "✦"},
+        "logo": {
+            "mode": "image-text", "text": "LotoCorp", "image": "", "size": 22,
+            "offsetX": 0, "offsetY": 0, "position": "inside", "verified": True,
+            "verifiedIcon": "check", "center": False,
         },
-        "linkStyle": {"animation": "underline", "border": "none", "hoverColor": "#002FA7", "showIcon": False},
-        "showSearch": True,
-        "showCart": True,
-        "ctaLabel": "",
+        "navLinks": [
+            {"label": "Sorteos", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
+            {"label": "Ganadores", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
+            {"label": "Cómo Participar", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
+            {"label": "Ayuda", "href": "#", "normalColor": "#EAF2EC", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"},
+        ],
+        "actions": [
+            {"type": "button", "preset": "comprar", "label": "Comprar boletos", "href": "#", "bg": "#3FC16F", "color": "#062012", "icon": "ticket"},
+            {"type": "icon", "preset": "cuenta", "label": "Mi cuenta", "href": "#", "bg": "transparent", "color": "#EAF2EC", "icon": "user"},
+            {"type": "icon-badge", "preset": "carrito", "label": "Carrito", "href": "#", "bg": "transparent", "color": "#EAF2EC", "icon": "cart"},
+        ],
+        "shell": {
+            "paddingY": 16, "sticky": True, "shadow": True, "pill": False, "textColor": "#EAF2EC",
+            "background": {
+                "type": "solid", "color": "#0B1510",
+                "gradient": {"from": "#0B1510", "to": "#122018", "angle": 90},
+                "pattern": {"id": "none", "patternColor": "#3FC16F", "opacity": 0.08, "size": 24, "emoji": "✦"},
+            },
+        },
     },
-    "stickyHeader": {
-        "enabled": True,
-        "style": "pill",
-        "showAfter": 240,
-        "bgColor": "#FFFFFF",
-        "textColor": "#0A0A0A",
-        "blur": True,
-        "pillLabel": "MERIDIAN",
-        "pillCtaLabel": "Cart",
-    },
+    "sections": [
+        {"id": "sorteos", "label": "Sorteos Activos", "enabled": True},
+        {"id": "como", "label": "Cómo Participar", "enabled": True},
+        {"id": "ganadores", "label": "Ganadores", "enabled": True},
+    ],
     "footer": {
-        "brandName": "MERIDIAN",
-        "tagline": "Considered objects for the modern interior.",
-        "bgColor": "#0A0A0A",
-        "textColor": "#FFFFFF",
+        "brandName": "LotoCorp",
+        "tagline": "Sorteos transparentes y auditados. Permiso SEGOB No. 20260123.",
+        "background": {"type": "solid", "color": "#081109"},
+        "textColor": "#EAF2EC",
         "columns": [
-            {"title": "Shop", "links": [{"label": "New Arrivals", "href": "#"}, {"label": "Best Sellers", "href": "#"}, {"label": "Sale", "href": "#"}]},
-            {"title": "Company", "links": [{"label": "About", "href": "#"}, {"label": "Careers", "href": "#"}, {"label": "Stores", "href": "#"}]},
-            {"title": "Support", "links": [{"label": "Contact", "href": "#"}, {"label": "Shipping", "href": "#"}, {"label": "Returns", "href": "#"}]},
+            {"title": "Sorteos", "links": [{"label": "Activos", "href": "#"}, {"label": "Próximos", "href": "#"}, {"label": "Finalizados", "href": "#"}]},
+            {"title": "Empresa", "links": [{"label": "Nosotros", "href": "#"}, {"label": "Transparencia", "href": "#"}, {"label": "Contacto", "href": "#"}]},
+            {"title": "Ayuda", "links": [{"label": "Cómo participar", "href": "#"}, {"label": "Preguntas frecuentes", "href": "#"}, {"label": "Bases legales", "href": "#"}]},
         ],
-        "socials": [
-            {"platform": "instagram", "href": "#"},
-            {"platform": "twitter", "href": "#"},
-            {"platform": "facebook", "href": "#"},
-        ],
-        "copyright": "© 2026 Meridian Studio. All rights reserved.",
+        "socials": [{"platform": "instagram", "href": "#"}, {"platform": "facebook", "href": "#"}, {"platform": "youtube", "href": "#"}],
+        "copyright": "© 2026 LotoCorp México. Todos los derechos reservados.",
     },
     "cart": {
-        "title": "Your Cart",
-        "emptyText": "Your cart is currently empty.",
-        "checkoutLabel": "Proceed to Checkout",
-        "accentColor": "#002FA7",
+        "title": "Tus boletos",
+        "emptyText": "Aún no has agregado boletos.",
+        "checkoutLabel": "Ir a pagar",
+        "accentColor": "#3FC16F",
         "showImages": True,
-        "freeShippingThreshold": 150,
+        "freeShippingThreshold": 0,
     },
 }
 
@@ -109,7 +103,7 @@ class ConfigUpdate(BaseModel):
 
 @api_router.get("/")
 async def root():
-    return {"message": "CMS Site Builder API"}
+    return {"message": "Sitecraft CMS API"}
 
 
 @api_router.get("/config")

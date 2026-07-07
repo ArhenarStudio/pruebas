@@ -1,10 +1,22 @@
-"""Backend API tests for CMS config endpoints."""
+"""Backend API tests for Sorthea Studio v2 config endpoints."""
 import os
 import copy
 import requests
 import pytest
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://page-composer-16.preview.emergentagent.com').rstrip('/')
+def _get_base():
+    v = os.environ.get('REACT_APP_BACKEND_URL')
+    if v:
+        return v.rstrip('/')
+    # fallback: parse frontend/.env
+    p = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', '.env')
+    with open(p) as f:
+        for line in f:
+            if line.startswith('REACT_APP_BACKEND_URL='):
+                return line.split('=', 1)[1].strip().rstrip('/')
+    raise RuntimeError('REACT_APP_BACKEND_URL not set')
+
+BASE_URL = _get_base()
 API = f"{BASE_URL}/api"
 
 
@@ -28,72 +40,82 @@ class TestConfigAPI:
         assert r.status_code == 200
         assert "message" in r.json()
 
-    def test_get_config_returns_defaults(self, client):
+    def test_get_config_returns_v2_defaults(self, client):
         r = client.get(f"{API}/config", timeout=15)
         assert r.status_code == 200
         data = r.json()
         assert "config" in data
         cfg = data["config"]
-        for key in ["announcementBar", "header", "stickyHeader", "footer", "cart"]:
-            assert key in cfg
-        assert cfg["header"]["logoText"] == "MERIDIAN"
+        # v2 top-level keys
+        for key in ["theme", "announcementBar", "header", "sections", "footer", "cart"]:
+            assert key in cfg, f"missing top-level key {key}"
+        # header v2 sub-structure
+        for key in ["logo", "navLinks", "actions", "shell"]:
+            assert key in cfg["header"], f"missing header.{key}"
+        assert cfg["header"]["logo"]["text"] == "LotoCorp"
+        assert cfg["header"]["logo"]["mode"] == "image-text"
+        assert cfg["header"]["logo"]["verified"] is True
+        # capacity defaults
+        assert len(cfg["header"]["navLinks"]) == 4
+        assert len(cfg["header"]["actions"]) == 3
+        # sections default 3
+        assert len(cfg["sections"]) == 3
+        assert [s["id"] for s in cfg["sections"]] == ["sorteos", "como", "ganadores"]
+        # announcementBar
         assert cfg["announcementBar"]["enabled"] is True
-
-    def test_defaults_include_new_schema(self, client):
-        r = client.get(f"{API}/config", timeout=15)
-        cfg = r.json()["config"]
-        ann = cfg["announcementBar"]
-        assert "announcements" in ann and isinstance(ann["announcements"], list) and len(ann["announcements"]) == 2
-        assert "transition" in ann
-        assert "background" in ann and ann["background"]["type"] in ["solid", "gradient", "pattern"]
-        assert "linkStyle" in cfg["header"]
-        for k in ["animation", "border", "hoverColor", "showIcon"]:
-            assert k in cfg["header"]["linkStyle"]
-        assert "background" in cfg["header"]
+        assert len(cfg["announcementBar"]["announcements"]) == 2
+        # backgrounds must expose engine schema
+        for path in [cfg["announcementBar"]["background"], cfg["header"]["shell"]["background"], cfg["footer"]["background"]]:
+            assert path["type"] in ("solid", "gradient", "pattern")
 
     def test_put_config_persists(self, client):
         r = client.get(f"{API}/config", timeout=15)
         cfg = copy.deepcopy(r.json()["config"])
-        cfg["announcementBar"]["announcements"] = [
-            {"text": "TEST_ann_1", "linkLabel": "L1", "link": "#1"},
-            {"text": "TEST_ann_2", "linkLabel": "L2", "link": "#2"},
-            {"text": "TEST_ann_3", "linkLabel": "L3", "link": "#3"},
+        cfg["header"]["logo"]["text"] = "TEST_BRAND"
+        cfg["header"]["navLinks"] = cfg["header"]["navLinks"] + [
+            {"label": "TEST_extra", "href": "#", "normalColor": "#fff", "hoverColor": "#3FC16F", "activeColor": "#3FC16F"}
         ]
-        cfg["announcementBar"]["transition"] = "marquee"
-        cfg["announcementBar"]["background"] = {
-            "type": "gradient",
-            "color": "#000000",
-            "gradient": {"from": "#FF0000", "to": "#00FF00", "angle": 45},
-            "pattern": {"id": "dots", "patternColor": "#FFFFFF", "opacity": 0.2, "size": 24, "emoji": "★"},
-        }
-        cfg["header"]["logoText"] = "TEST_BRAND"
-        cfg["header"]["linkStyle"] = {"animation": "scale", "border": "pill", "hoverColor": "#FF00FF", "showIcon": True}
+        cfg["header"]["shell"]["paddingY"] = 30
+        cfg["announcementBar"]["announcements"] = [{"text": "TEST_msg", "linkLabel": "L", "link": "#"}]
+        cfg["sections"] = [{"id": "sorteos", "label": "S", "enabled": False}, {"id": "como", "label": "C", "enabled": True}]
+        cfg["footer"]["brandName"] = "TEST_FOOTER"
 
         r2 = client.put(f"{API}/config", json={"config": cfg}, timeout=15)
         assert r2.status_code == 200
-        updated = r2.json()["config"]
-        assert len(updated["announcementBar"]["announcements"]) == 3
-        assert updated["announcementBar"]["transition"] == "marquee"
-        assert updated["announcementBar"]["background"]["type"] == "gradient"
-        assert updated["header"]["logoText"] == "TEST_BRAND"
-        assert updated["header"]["linkStyle"]["animation"] == "scale"
+        upd = r2.json()["config"]
+        assert upd["header"]["logo"]["text"] == "TEST_BRAND"
+        assert len(upd["header"]["navLinks"]) == 5
+        assert upd["header"]["shell"]["paddingY"] == 30
 
-        # GET to verify persistence
+        # GET verifies persistence
         r3 = client.get(f"{API}/config", timeout=15)
-        assert r3.status_code == 200
         got = r3.json()["config"]
-        assert got["announcementBar"]["announcements"][0]["text"] == "TEST_ann_1"
-        assert got["header"]["linkStyle"]["showIcon"] is True
+        assert got["header"]["logo"]["text"] == "TEST_BRAND"
+        assert got["announcementBar"]["announcements"][0]["text"] == "TEST_msg"
+        assert got["footer"]["brandName"] == "TEST_FOOTER"
+        assert got["sections"][0]["enabled"] is False
 
-    def test_reset_config(self, client):
-        r = client.post(f"{API}/config/reset", timeout=15)
-        assert r.status_code == 200
-        cfg = r.json()["config"]
-        assert cfg["header"]["logoText"] == "MERIDIAN"
-        # verify persisted
-        r2 = client.get(f"{API}/config", timeout=15)
-        assert r2.json()["config"]["header"]["logoText"] == "MERIDIAN"
+    def test_reset_restores_defaults(self, client):
+        # dirty first
+        r = client.get(f"{API}/config", timeout=15)
+        cfg = copy.deepcopy(r.json()["config"])
+        cfg["header"]["logo"]["text"] = "DIRTY"
+        client.put(f"{API}/config", json={"config": cfg}, timeout=15)
+
+        r2 = client.post(f"{API}/config/reset", timeout=15)
+        assert r2.status_code == 200
+        rcfg = r2.json()["config"]
+        assert rcfg["header"]["logo"]["text"] == "LotoCorp"
+        assert len(rcfg["header"]["navLinks"]) == 4
+        assert len(rcfg["header"]["actions"]) == 3
+        assert len(rcfg["sections"]) == 3
+
+        # persisted
+        r3 = client.get(f"{API}/config", timeout=15)
+        assert r3.json()["config"]["header"]["logo"]["text"] == "LotoCorp"
 
     def test_no_mongo_object_id_in_response(self, client):
         r = client.get(f"{API}/config", timeout=15)
-        assert "_id" not in r.json()
+        j = r.json()
+        assert "_id" not in j
+        assert "_id" not in j.get("config", {})
